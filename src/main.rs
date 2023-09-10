@@ -1,8 +1,10 @@
-use utils::auto_complete::get_suggestions;
+use crate::utils::auto_complete;
 
 mod utils;
 
 fn main() {
-    let suggestions = get_suggestions("hel", 5);
-    println!("{:?}", suggestions);
+    color_eyre::install().ok();
+    dotenv::dotenv().ok();
+    tracing_subscriber::fmt::init();
+    auto_complete::initialize();
 }
