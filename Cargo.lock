@@ -95,20 +95,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "api"
-version = "0.1.0"
-dependencies = [
- "color-eyre",
- "dotenv",
- "poem",
- "poem-openapi",
- "sqlx",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "async-trait"
 version = "0.1.72"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -453,6 +439,21 @@ dependencies = [
  "const-oid",
  "crypto-common",
  "subtle",
+]
+
+[[package]]
+name = "domains-backend"
+version = "0.1.0"
+dependencies = [
+ "color-eyre",
+ "dotenv",
+ "lazy_static",
+ "poem",
+ "poem-openapi",
+ "sqlx",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
