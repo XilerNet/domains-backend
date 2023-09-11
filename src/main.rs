@@ -22,8 +22,8 @@ struct Api;
 #[OpenApi]
 impl Api {
     #[oai(path = "/search", method = "get")]
-    async fn search(&self, pool: Data<&Repository>, search: Query<String>) -> SearchDomainResponse {
-        endpoints::search::search(&pool, search.0).await
+    async fn search(&self, pool: Data<&Repository>, query: Query<String>) -> SearchDomainResponse {
+        endpoints::search::search(&pool, query.0).await
     }
 }
 
