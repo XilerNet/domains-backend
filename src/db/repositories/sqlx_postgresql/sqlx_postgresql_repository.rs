@@ -28,6 +28,10 @@ impl DomainRepository for SqlxPostgresqlRepository {
         let mut max_index = names.len() - 1;
 
         while index <= max_index {
+            if names.len() == 0 {
+                break;
+            }
+
             let domain = sqlx::query!(
                 r#"
                     SELECT name, inscription, valid_from
@@ -49,7 +53,10 @@ impl DomainRepository for SqlxPostgresqlRepository {
 
                 if valid_from + DOMAIN_LIFETIME > now {
                     names.remove(index);
-                    max_index -= 1;
+
+                    if max_index > 0 {
+                        max_index -= 1;
+                    }
                     continue;
                 }
             }
