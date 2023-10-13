@@ -64,4 +64,30 @@ impl DomainRepository for SqlxPostgresqlRepository {
             index += 1;
         }
     }
+
+    async fn get_domains_of_addresses(&self, addresses: &Vec<String>) -> Vec<(String, String)> {
+        debug!("[DB] Getting domains of addresses {:?}", addresses);
+
+        let res = sqlx::query!(
+            r#"
+                SELECT name, inscription
+                FROM domain
+                WHERE address = ANY($1)
+            "#,
+            addresses
+        )
+        .fetch_all(&self.pool)
+        .await;
+
+        match res {
+            Ok(res) => res
+                .into_iter()
+                .map(|row| (row.name, row.inscription))
+                .collect(),
+            Err(err) => {
+                debug!("[DB] Error getting domains of addresses: {:?}", err);
+                vec![]
+            }
+        }
+    }
 }
