@@ -24,6 +24,24 @@ impl DomainRepository for SqlxPostgresqlRepository {
     }
 
     async fn retain_available_domain_names(&self, names: &mut Vec<String>) {
+        let names_non_mut = names.clone();
+
+        let known_domains = sqlx::query!(r#"
+                SELECT domain FROM private_keys
+                INNER JOIN payment_inscription_contents ON payment_inscription_contents.id = private_keys.payment_inscription_content_id 
+                INNER JOIN payments ON payments.id = payment_inscription_contents.payment_id 
+                WHERE payments.initiated = True 
+                    AND private_keys.domain = ANY($1);
+            "#,
+            &names_non_mut
+            )
+            .fetch_all(&self.pool)
+            .await
+            .unwrap();
+
+        let known_domains: Vec<String> = known_domains.into_iter().map(|row| row.domain).collect();
+        names.retain(|name| !known_domains.contains(name));
+
         let mut index = 0;
         let mut max_index = names.len() - 1;
 
