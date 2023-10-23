@@ -108,4 +108,34 @@ impl DomainRepository for SqlxPostgresqlRepository {
             }
         }
     }
+
+    async fn get_domain_by_inscription(
+        &self,
+        inscription: &str,
+    ) -> Result<Option<String>, sqlx::Error> {
+        debug!("[DB] Getting domain by inscription {:?}", inscription);
+
+        let res = sqlx::query!(
+            r#"
+                SELECT private_keys.domain FROM payment_inscriptions 
+                INNER JOIN payment_inscription_contents ON payment_inscription_contents.id = payment_inscriptions.content 
+                INNER JOIN private_keys ON private_keys.payment_inscription_content_id = payment_inscription_contents.id 
+                WHERE payment_inscriptions.reveal_tx = $1;
+            "#,
+            inscription
+        )
+        .fetch_optional(&self.pool)
+        .await;
+
+        match res {
+            Ok(res) => match res {
+                Some(res) => Ok(Some(res.domain)),
+                None => Ok(None),
+            },
+            Err(err) => {
+                debug!("[DB] Error getting domain by inscription: {:?}", err);
+                Err(err)
+            }
+        }
+    }
 }

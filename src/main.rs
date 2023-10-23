@@ -1,11 +1,12 @@
 #![feature(async_fn_in_trait)]
 
 use db::DomainRepository;
+use endpoints::about::AboutInscriptionResponse;
 use endpoints::domains::{DomainsData, DomainsResponse};
 use endpoints::search::SearchDomainResponse;
 use poem::web::Data;
 use poem::{listener::TcpListener, middleware::Cors, EndpointExt, Result, Route, Server};
-use poem_openapi::param::Query;
+use poem_openapi::param::{Path, Query};
 use poem_openapi::payload::Json;
 use poem_openapi::{OpenApi, OpenApiService};
 use std::env;
@@ -30,6 +31,11 @@ impl Api {
     #[oai(path = "/domains", method = "post")]
     async fn domains(&self, pool: Data<&Repository>, data: Json<DomainsData>) -> DomainsResponse {
         endpoints::domains::domains(&pool, &data).await
+    }
+
+    #[oai(path = "/about/:id", method = "get")]
+    async fn about(&self, pool: Data<&Repository>, id: Path<String>) -> AboutInscriptionResponse {
+        endpoints::about::about(&pool, id.0).await
     }
 }
 
